@@ -31,29 +31,32 @@ public class Discriminator {
 		int result = 0; // 0:판단유보, 1:사실, 2:거짓
 		ArrayList<SentenceInfo> selectedDatas = new ArrayList<>();
 
-		if (!sentenceInfo_input.obj.equals("null")) { // 목적어 있음
+		if (!sentenceInfo_input.obj.equals("null") || !sentenceInfo_input.cmp.equals("null")) { // 목적어 or 보어 있음
 			for (int i = 0; i < relatedDatas.size(); i++) {
-				if (!relatedDatas.get(i).obj.equals("null") && !sentenceInfo_input.obj.equals("null")) { // 목적어 비교
-					if(relatedDatas.get(i).obj.equals(sentenceInfo_input.obj)) {	//목적어 같음
+				if ((!relatedDatas.get(i).obj.equals("null") && !sentenceInfo_input.obj.equals("null")) || (!relatedDatas.get(i).cmp.equals("null") && !sentenceInfo_input.cmp.equals("null"))) { // 목적어 or 보어 체크
+					if (relatedDatas.get(i).obj.equals(sentenceInfo_input.obj) || relatedDatas.get(i).cmp.equals(sentenceInfo_input.cmp)) { // 목적어 or 보어 같음
 						boolean continue_flag = true;
-						if(!relatedDatas.get(i).tmp.equals("null") && !sentenceInfo_input.tmp.equals("null")) {	//시간 비교
-							if(!relatedDatas.get(i).tmp.equals(sentenceInfo_input.tmp)) {	//시간 다름
+						if (!relatedDatas.get(i).tmp.equals("null") && !sentenceInfo_input.tmp.equals("null")) { // 시간
+																													// 비교
+							if (!relatedDatas.get(i).tmp.equals(sentenceInfo_input.tmp)) { // 시간 다름
 								continue_flag = false;
 							}
 						}
-						if(continue_flag && !relatedDatas.get(i).location.equals("null") && !sentenceInfo_input.location.equals("null")) {	//장소 비교
-							if(!relatedDatas.get(i).location.equals(sentenceInfo_input.location)) {	//장소 다름
+						if (continue_flag && !relatedDatas.get(i).location.equals("null")
+								&& !sentenceInfo_input.location.equals("null")) { // 장소 비교
+							if (!relatedDatas.get(i).location.equals(sentenceInfo_input.location)) { // 장소 다름
 								continue_flag = false;
 							}
 						}
-						if(continue_flag && !relatedDatas.get(i).adv.equals("null") && !sentenceInfo_input.adv.equals("null")) {	//부사어 비교
-							if(!relatedDatas.get(i).adv.equals(sentenceInfo_input.adv)) {	//부사어 다름
+						if (continue_flag && !relatedDatas.get(i).adv.equals("null")
+								&& !sentenceInfo_input.adv.equals("null")) { // 부사어 비교
+							if (!relatedDatas.get(i).adv.equals(sentenceInfo_input.adv)) { // 부사어 다름
 								continue_flag = false;
 							}
 						}
 						if (continue_flag) { // 나머지 다 똑같!
 							if (!(relatedDatas.get(i).neg.equals("no") ^ sentenceInfo_input.neg.equals("no"))) { // true~~~~~
-								if(result != 1) {
+								if (result != 1) {
 									selectedDatas.clear();
 								}
 								result = 1;
@@ -68,26 +71,29 @@ public class Discriminator {
 								selectedDatas.add(relatedDatas.get(i));
 							}
 						}
-					} else { // 목적어 다름
+					} else { // 목적어 or 보어 다름
 						if (result != 1) {
 							boolean continue_flag = true;
-							if(!relatedDatas.get(i).tmp.equals("null") && !sentenceInfo_input.tmp.equals("null")) {	//시간 비교
-								if(!relatedDatas.get(i).tmp.equals(sentenceInfo_input.tmp)) {	//시간 다름
+							if (!relatedDatas.get(i).tmp.equals("null") && !sentenceInfo_input.tmp.equals("null")) { // 시간
+																														// 비교
+								if (!relatedDatas.get(i).tmp.equals(sentenceInfo_input.tmp)) { // 시간 다름
 									continue_flag = false;
 								}
 							}
-							if(continue_flag && !relatedDatas.get(i).location.equals("null") && !sentenceInfo_input.location.equals("null")) {
-								if(!relatedDatas.get(i).location.equals(sentenceInfo_input.location)) {	//장소 다름
+							if (continue_flag && !relatedDatas.get(i).location.equals("null")
+									&& !sentenceInfo_input.location.equals("null")) {
+								if (!relatedDatas.get(i).location.equals(sentenceInfo_input.location)) { // 장소 다름
 									continue_flag = false;
 								}
 							}
-							if(continue_flag && !relatedDatas.get(i).adv.equals("null") && !sentenceInfo_input.adv.equals("null")) {
-								if(!relatedDatas.get(i).adv.equals(sentenceInfo_input.adv)) {	//부사어 다름
+							if (continue_flag && !relatedDatas.get(i).adv.equals("null")
+									&& !sentenceInfo_input.adv.equals("null")) {
+								if (!relatedDatas.get(i).adv.equals(sentenceInfo_input.adv)) { // 부사어 다름
 									continue_flag = false;
 								}
 							}
 							if (continue_flag) { // 나머지 다 똑같!
-								if (!(relatedDatas.get(i).neg.equals("no") ^ sentenceInfo_input.neg.equals("no"))) { //false
+								if (!(relatedDatas.get(i).neg.equals("no") ^ sentenceInfo_input.neg.equals("no"))) { // false
 									result = 2;
 									selectedDatas.add(relatedDatas.get(i));
 								}
@@ -96,10 +102,8 @@ public class Discriminator {
 					}
 				}
 			}
-		} else if (!sentenceInfo_input.cmp.equals("null")) { // 보어 비교
-			
-		} else { // 부사어 비교
-			
+		} else { // 목적어 or 보어 없음 -> 부사어 비교
+
 		}
 
 		// 결과 show(); 해줘야돼
@@ -113,7 +117,7 @@ public class Discriminator {
 			}
 			System.out.println("***** 비교에 사용된 데이터 *****");
 			for (int i = 0; i < selectedDatas.size(); i++) {
-				System.out.println("비교문장" + (i+1) + ") " + selectedDatas.get(i).sentence);
+				System.out.println("비교문장" + (i + 1) + ") " + selectedDatas.get(i).sentence);
 			}
 		}
 		return result;
